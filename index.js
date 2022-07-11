@@ -1,6 +1,6 @@
 import { Client, Intents } from 'discord.js';
 import { DISC_TOKEN } from './src/config/index.js';
-import { fetchToken } from './src/services/api.js';
+import { createPix } from './src/services/api.js';
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -17,7 +17,12 @@ client.on('interactionCreate', async interaction => {
 	const { commandName } = interaction;
 
 	if (commandName === 'ping') {
-		await interaction.reply(fetchToken());
+		const opa = await createPix('10.21');
+
+		await interaction.reply({
+			content: opa.status ? opa.status : 'a',
+			ephemeral: true,
+		});
 	}
 	else if (commandName === 'server') {
 		await interaction.reply('Server info.');

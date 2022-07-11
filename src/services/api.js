@@ -1,5 +1,14 @@
 import fetch from 'node-fetch';
-import { BB_BASIC } from '../config/index.js';
+import { BB_BASIC, BB_KEY } from '../config/index.js';
+
+const generateTxid = () => {
+	let result = '';
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	for (let i = 0; i < 35; i++) {
+		result += characters.charAt(Math.floor(Math.random() * characters.length));
+	}
+	return result;
+};
 
 export const fetchToken = async () => {
 	const URL = 'https://oauth.hm.bb.com.br/oauth/token';
@@ -20,9 +29,50 @@ export const fetchToken = async () => {
 		redirect: 'follow',
 	};
 
-	const { access_token } = await fetch(URL, requestOptions)
+	const access_token = await fetch(URL, requestOptions)
 		.then(data => data.json())
+		.then(data => data.access_token)
 		.catch(error => console.log('error', error));
 
 	return access_token;
+};
+
+export const createPix = async (valor) => {
+
+	const token = await fetchToken();
+
+	const myHeaders = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${token}`,
+	};
+
+	const raw = JSON.stringify({
+		'calendario': {
+			'expiracao': 36000,
+		},
+		'devedor': {
+			'cpf': '12345678909',
+			'nome': 'Francisco da Silva',
+		},
+		'valor': {
+			'original': valor,
+		},
+		'chave': '28779295827',
+		'solicitacaoPagador': 'Cobrança dos serviços prestados.',
+	});
+
+	const requestOptions = {
+		method: 'PUT',
+		headers: myHeaders,
+		body: raw,
+		redirect: 'follow',
+	};
+
+	const URL = `https://api.hm.bb.com.br/pix/v1/cobqrcode/${generateTxid()}?gw-dev-app-key=${BB_KEY}`;
+
+	const response = await fetch(URL, requestOptions)
+		.then(data => data.json())
+		.catch(error => console.log('error', error));
+
+	return response;
 };
