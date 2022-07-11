@@ -1,5 +1,6 @@
-const { Client, Intents } = require('discord.js');
-const { TOKEN } = require('./src/config');
+import { Client, Intents } from 'discord.js';
+import { DISC_TOKEN } from './src/config/index.js';
+import { fetchToken } from './src/services/api.js';
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -16,7 +17,7 @@ client.on('interactionCreate', async interaction => {
 	const { commandName } = interaction;
 
 	if (commandName === 'ping') {
-		await interaction.reply('Pong!');
+		await interaction.reply(fetchToken());
 	}
 	else if (commandName === 'server') {
 		await interaction.reply('Server info.');
@@ -27,5 +28,5 @@ client.on('interactionCreate', async interaction => {
 });
 
 
-// Login to Discord with your client's token
-client.login(TOKEN);
+// Login to Discord with your client's DISC_token
+client.login(DISC_TOKEN);
