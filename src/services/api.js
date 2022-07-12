@@ -109,3 +109,27 @@ export const fetchPix = async (txid) => {
 
 	return pix;
 };
+
+export const simulatePayPix = async (textoImagem) => {
+	const token = await fetchToken();
+
+	const headers = {
+		Authorization: `Bearer ${token}`,
+		'Content-type': 'application/json',
+	};
+	const body = JSON.stringify({
+		'pix': textoImagem,
+	});
+	const requestOptions = {
+		method: 'POST',
+		headers,
+		body,
+		redirect: 'follow',
+	};
+	const URL = 'https://api.hm.bb.com.br/testes-portal-desenvolvedor/v1/boletos-pix/pagar?gw-app-key=95cad3f03fd9013a9d15005056825665';
+
+	const response = await fetch(URL, requestOptions)
+		.then(console.log);
+
+	return response;
+};

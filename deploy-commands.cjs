@@ -12,6 +12,11 @@ const commands = [
 			option.setName('txid')
 				.setDescription('O txid do pix a ser pago')
 				.setRequired(true)),
+	new SlashCommandBuilder().setName('fetch').setDescription('Simulates paying a pix!')
+		.addStringOption(option =>
+			option.setName('txid')
+				.setDescription('O txid do pix a ser pago')
+				.setRequired(true)),
 ]
 	.map(command => command.toJSON());
 
