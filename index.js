@@ -27,6 +27,25 @@ client.on('interactionCreate', async interaction => {
 			ephemeral: true,
 			files: [qr],
 		});
+
+		let i = 0;
+		const timer = setInterval(async () => {
+			const { status } = await fetchPix(txid);
+			console.log(status);
+			if (status === 'CONCLUIDA') {
+				const role = interaction.guild.roles.cache.find(({ name }) => name === 'SUCESSO');
+				const user = interaction.user.id;
+				const member = interaction.guild.members.cache.find(({ id }) => id === user);
+				await member.roles.add(role);
+				clearInterval(timer);
+			}
+			else {
+				if (i > 20) {
+					clearInterval(timer);
+				}
+				i++;
+			}
+		}, 5000);
 	}
 	else if (commandName === 'server') {
 		await interaction.reply('Server info.');
