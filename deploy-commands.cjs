@@ -4,15 +4,17 @@ const { Routes } = require('discord-api-types/v9');
 const { DISC_TOKEN, DISC_CLIENT_ID, DISC_GUILD_ID } = require('./src/config/disc.cjs');
 
 const commands = [
-	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
-	new SlashCommandBuilder().setName('server').setDescription('Replies with server info!'),
-	new SlashCommandBuilder().setName('user').setDescription('Replies with user info!'),
-	new SlashCommandBuilder().setName('pay').setDescription('Simulates paying a pix!')
+	new SlashCommandBuilder().setName('pix').setDescription('Responde com um pix gerado dinamicamente')
 		.addStringOption(option =>
-			option.setName('txid')
-				.setDescription('O txid do pix a ser pago')
+			option.setName('value')
+				.setDescription('O valor do pix a ser gerado')
 				.setRequired(true)),
-	new SlashCommandBuilder().setName('fetch').setDescription('Simulates paying a pix!')
+	new SlashCommandBuilder().setName('pay').setDescription('Simula o pagamento de um pix')
+		.addStringOption(option =>
+			option.setName('code')
+				.setDescription('O código do pix a ser pago')
+				.setRequired(true)),
+	new SlashCommandBuilder().setName('fetch').setDescription('Busca informações sobre uma transação')
 		.addStringOption(option =>
 			option.setName('txid')
 				.setDescription('O txid do pix a ser pago')

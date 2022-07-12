@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { BB_BASIC, BB_KEY } from '../config/index.js';
+import { BB_BASIC, BB_KEY, PIX_CHAVE } from '../config/index.js';
 import qrcode from 'qrcode';
 import { MessageAttachment } from 'discord.js';
 
@@ -15,7 +15,7 @@ const generateTxid = () => {
 export const fetchToken = async () => {
 	const URL = 'https://oauth.hm.bb.com.br/oauth/token';
 
-	const myHeaders = {
+	const headers = {
 		'Authorization': BB_BASIC,
 		'Content-Type': 'application/x-www-form-urlencoded',
 	};
@@ -26,7 +26,7 @@ export const fetchToken = async () => {
 
 	const requestOptions = {
 		method: 'POST',
-		headers: myHeaders,
+		headers,
 		body: urlencoded,
 		redirect: 'follow',
 	};
@@ -43,14 +43,13 @@ export const createPix = async (valor) => {
 
 	const token = await fetchToken();
 
-	const myHeaders = {
+	const headers = {
 		'Content-Type': 'application/json',
 		'Authorization': `Bearer ${token}`,
 	};
-
-	const raw = JSON.stringify({
+	const body = JSON.stringify({
 		'calendario': {
-			'expiracao': 36000,
+			'expiracao': 100000,
 		},
 		'devedor': {
 			'cpf': '12345678909',
@@ -59,14 +58,13 @@ export const createPix = async (valor) => {
 		'valor': {
 			'original': valor,
 		},
-		'chave': '28779295827',
+		'chave': PIX_CHAVE,
 		'solicitacaoPagador': 'Cobrança dos serviços prestados.',
 	});
-
 	const requestOptions = {
 		method: 'PUT',
-		headers: myHeaders,
-		body: raw,
+		headers,
+		body,
 		redirect: 'follow',
 	};
 
@@ -110,6 +108,7 @@ export const fetchPix = async (txid) => {
 	return pix;
 };
 
+// This function only works in a test environment, do not use it in production
 export const simulatePayPix = async (textoImagem) => {
 	const token = await fetchToken();
 
@@ -128,8 +127,10 @@ export const simulatePayPix = async (textoImagem) => {
 	};
 	const URL = 'https://api.hm.bb.com.br/testes-portal-desenvolvedor/v1/boletos-pix/pagar?gw-app-key=95cad3f03fd9013a9d15005056825665';
 
+	// Sometimes the test api just doesn't work so you'll have to try again
 	const response = await fetch(URL, requestOptions)
-		.then(console.log);
+		.then(console.log)
+		.catch(console.error);
 
 	return response;
 };
