@@ -1,6 +1,6 @@
 import { Client, Intents } from 'discord.js';
 import { DISC_TOKEN } from './src/config/index.js';
-import { createPix, pixQrCode } from './src/services/api.js';
+import { createPix, fetchPix, pixQrCode } from './src/services/api.js';
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -17,13 +17,15 @@ client.on('interactionCreate', async interaction => {
 	const { commandName } = interaction;
 
 	if (commandName === 'ping') {
-		const opa = await createPix('10.21')
-			.then(({ textoImagemQRcode: pix }) => pixQrCode(pix))
+		const pix = await createPix('10.21');
+
+		const qr = await (pixQrCode(pix.textoImagemQRcode))
 			.then(({ attach }) => attach);
+
 		await interaction.reply({
-			content: 'Here\'s your qr code',
+			content: pix.txid,
 			ephemeral: true,
-			files: [opa],
+			files: [qr],
 		});
 	}
 	else if (commandName === 'server') {
@@ -31,6 +33,12 @@ client.on('interactionCreate', async interaction => {
 	}
 	else if (commandName === 'user') {
 		await interaction.reply('User info.');
+	}
+	else if (commandName === 'pay') {
+		const [{ value: txid }] = interaction.options['_hoistedOptions'];
+		const info = await fetchPix(txid);
+		console.log(info);
+		await interaction.reply('a');
 	}
 });
 

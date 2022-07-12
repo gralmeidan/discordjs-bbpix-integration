@@ -89,3 +89,23 @@ export const pixQrCode = async (pix) => {
 		attach,
 	};
 };
+
+export const fetchPix = async (txid) => {
+	const token = await fetchToken();
+
+	const myHeaders = {
+		Authorization: `Bearer ${token}`,
+	};
+	const requestOptions = {
+		method: 'GET',
+		headers: myHeaders,
+		redirect: 'follow',
+	};
+	const URL = `https://api.hm.bb.com.br/pix/v1/cob/${txid}?gw-dev-app-key=${BB_KEY}`;
+
+	const pix = await fetch(URL, requestOptions)
+		.then(data => data.json())
+		.catch(console.error);
+
+	return pix;
+};
