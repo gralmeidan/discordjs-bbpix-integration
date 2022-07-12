@@ -1,6 +1,6 @@
 import { Client, Intents } from 'discord.js';
 import { DISC_TOKEN } from './src/config/index.js';
-import { createPix } from './src/services/api.js';
+import { createPix, pixQrCode } from './src/services/api.js';
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -17,11 +17,13 @@ client.on('interactionCreate', async interaction => {
 	const { commandName } = interaction;
 
 	if (commandName === 'ping') {
-		const opa = await createPix('10.21');
-
+		const opa = await createPix('10.21')
+			.then(({ textoImagemQRcode: pix }) => pixQrCode(pix))
+			.then(({ attach }) => attach);
 		await interaction.reply({
-			content: opa.status ? opa.status : 'a',
+			content: 'Here\'s your qr code',
 			ephemeral: true,
+			files: [opa],
 		});
 	}
 	else if (commandName === 'server') {

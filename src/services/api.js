@@ -1,5 +1,7 @@
 import fetch from 'node-fetch';
 import { BB_BASIC, BB_KEY } from '../config/index.js';
+import qrcode from 'qrcode';
+import { MessageAttachment } from 'discord.js';
 
 const generateTxid = () => {
 	let result = '';
@@ -75,4 +77,15 @@ export const createPix = async (valor) => {
 		.catch(error => console.log('error', error));
 
 	return response;
+};
+
+export const pixQrCode = async (pix) => {
+	const base64 = 	await qrcode.toDataURL(pix);
+	const buff = new Buffer.from(base64.split(',')[1], 'base64');
+	const attach = new MessageAttachment(buff, `${pix}.png`);
+
+	return {
+		base64,
+		attach,
+	};
 };
